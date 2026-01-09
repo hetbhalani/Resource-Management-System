@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // get all users
 export const GET = async () => {
-    const res = await prisma.users.findMany();
+    const res = await prisma.buildings.findMany();
     return new NextResponse(JSON.stringify(res));
 }
 
@@ -14,12 +14,11 @@ export const POST = async (request: NextRequest) => {
     try {
         const body = await request.json();
 
-        const newUser = await prisma.users.create({
+        const newUser = await prisma.buildings.create({
             data: {
-                name: body.name,
-                email: body.email,
-                role: body.role,
-                password: body.password,
+                building_name: body.building_name,
+                building_number: body.building_number,
+                total_floors: body.total_floors,
             }
         });
 
@@ -32,4 +31,3 @@ export const POST = async (request: NextRequest) => {
         );
     }
 }
-

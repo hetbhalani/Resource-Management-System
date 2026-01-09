@@ -3,27 +3,24 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// get all users
+// get all resource_types
 export const GET = async () => {
-    const res = await prisma.users.findMany();
+    const res = await prisma.resource_types.findMany();
     return new NextResponse(JSON.stringify(res));
 }
 
-// create new user
+// create new resource_types
 export const POST = async (request: NextRequest) => {
     try {
         const body = await request.json();
 
-        const newUser = await prisma.users.create({
+        const newResourceType = await prisma.resource_types.create({
             data: {
-                name: body.name,
-                email: body.email,
-                role: body.role,
-                password: body.password,
+                type_name: body.type_name
             }
         });
 
-        return NextResponse.json(newUser, { status: 201 });
+        return NextResponse.json(newResourceType, { status: 201 });
     } catch (error) {
         console.error("create user error:", error);
         return NextResponse.json(
