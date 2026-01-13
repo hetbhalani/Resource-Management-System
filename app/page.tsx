@@ -1,23 +1,19 @@
 "use client";
 
 import React from 'react';
+import Image from 'next/image';
 import { cn } from "@/lib/utils";
+import {HoverBorderGradientDemo} from "@/components/getStartedBtn"
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3 animate-fade-in-left">
-            <div className="grid grid-cols-2 gap-1">
-              <div className="w-2 h-2 bg-indigo-600 rounded-sm"></div>
-              <div className="w-2 h-2 bg-violet-500 rounded-sm"></div>
-              <div className="w-2 h-2 bg-violet-500 rounded-sm"></div>
-              <div className="w-2 h-2 bg-indigo-600 rounded-sm"></div>
-            </div>
-            <span className="text-xl font-bold text-black">Resourcify</span>
+          <div className="flex items-center me-100 animate-fade-in-left">
+            <Image src="/logo_new.png" alt="Resourcify logo" width={180} height={180} className="object-contain" />
           </div>
 
           {/* Auth Buttons */}
@@ -25,7 +21,7 @@ export default function LandingPage() {
             <button className="px-5 py-2 bg-gray-100 border-none rounded-lg text-sm font-medium text-black hover:bg-gray-200 transition-all duration-200 cursor-pointer">
               Sign In
             </button>
-            <button className="px-5 py-2 bg-black border-none rounded-lg text-sm font-medium text-white hover:bg-gray-800 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer">
+            <button className="px-5 py-2 bg-black border-none rounded-lg text-sm font-medium text-white hover:bg-gray-950 duration-300 cursor-pointer">
               Get Started
             </button>
           </div>
@@ -39,7 +35,7 @@ export default function LandingPage() {
           className={cn(
             "absolute inset-0",
             "[background-size:50px_50px]",
-            "[background-image:linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)]"
+            "[background-image:linear-gradient(to_right,#e4e4e4_1px,transparent_1px),linear-gradient(to_bottom,#cccccc_1px,transparent_1px)]"
           )}
         />
 
@@ -49,26 +45,19 @@ export default function LandingPage() {
 
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-4xl animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2 mb-8">
-            <span className="w-2 h-2 bg-violet-500 rounded-full"></span>
-            <span className="text-sm text-black font-medium">Now with AI-powered scheduling</span>
-          </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-black mb-8 tracking-tight">
+          <span className="text-5xl text-black md:text-7xl font-bold text-black mb-8 tracking-tight">
             Manage Resources
             <span className="block mt-2 text-black">Without the Chaos</span>
-          </h1>
+          </span>
 
           <p className="text-xl text-gray-600 leading-relaxed mb-12 max-w-2xl mx-auto">
-            One platform to book, track, and optimize every resource in your organization. From <span className="text-indigo-600 font-medium">meeting rooms</span> to <span className="text-violet-600 font-medium">equipment</span> — all in one place.
+            One platform to book, track, and optimize every resource in your organization. From <span className="text-violet-600 font-medium">meeting rooms</span> to <span className="text-violet-600 font-medium">equipments</span> - all in one place.
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
             <button className="px-8 py-4 bg-black border-none rounded-lg text-base font-semibold text-white hover:bg-gray-800 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-              Start Free Trial
-            </button>
-            <button className="px-8 py-4 bg-white border border-gray-200 rounded-lg text-base font-semibold text-black hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
-              Book a Demo
+              Get Started
             </button>
           </div>
         </div>
@@ -77,7 +66,7 @@ export default function LandingPage() {
         <div className="relative z-10 mt-20 animate-fade-in-up animation-delay-300">
           <div className="flex items-center gap-12 bg-white px-12 py-8 rounded-2xl shadow-xl border border-gray-100">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-4xl font-bold text-black">500<span className="text-indigo-600">+</span></span>
+              <span className="text-4xl font-bold text-black">369<span className="text-indigo-600">+</span></span>
               <span className="text-sm text-gray-500 font-medium">Organizations</span>
             </div>
             <div className="w-px h-12 bg-gray-200"></div>
