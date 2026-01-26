@@ -1,13 +1,18 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { cn } from "@/lib/utils";
-import {HoverBorderGradientDemo} from "@/components/getStartedBtn"
+import LoginModal from "@/components/LoginModal";
 
 export default function LandingPage() {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white font-sans">
+      {/* Login Modal */}
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
         <div className="max-w-7xl mx-auto py-4 flex items-center justify-between">
@@ -18,10 +23,16 @@ export default function LandingPage() {
 
           {/* Auth Buttons */}
           <div className="flex gap-3 animate-fade-in-right">
-            <button className="px-5 py-2 bg-gray-100 border-none rounded-lg text-sm font-medium text-black hover:bg-gray-200 transition-all duration-200 cursor-pointer">
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-5 py-2 bg-gray-100 border-none rounded-lg text-sm font-medium text-black hover:bg-gray-200 transition-all duration-200 cursor-pointer"
+            >
               Sign In
             </button>
-            <button className="px-5 py-2 bg-black border-none rounded-lg text-sm font-medium text-white hover:bg-gray-950 duration-300 cursor-pointer">
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-5 py-2 bg-black border-none rounded-lg text-sm font-medium text-white hover:bg-gray-950 duration-300 cursor-pointer"
+            >
               Get Started
             </button>
           </div>
@@ -56,7 +67,10 @@ export default function LandingPage() {
           </p>
 
           <div className="flex gap-4 justify-center flex-wrap">
-            <button className="px-8 py-4 bg-black border-none rounded-lg text-base font-semibold text-white hover:bg-gray-800 hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+            <button 
+              onClick={() => setIsLoginModalOpen(true)}
+              className="px-8 py-4 bg-black border-none rounded-lg text-base font-semibold text-white hover:bg-gray-800 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            >
               Get Started
             </button>
           </div>
@@ -87,7 +101,7 @@ export default function LandingPage() {
       <section className="py-24 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">Everything you need</h2>
+            <span className="text-3xl md:text-4xl font-bold text-black mb-4">Everything you need</span>
             <p className="text-lg text-gray-600 max-w-xl mx-auto">Powerful features to help you manage, track, and optimize all your organizational resources.</p>
           </div>
 
@@ -101,7 +115,7 @@ export default function LandingPage() {
                   <path d="M9 21V9" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-black mb-2">Resource Management</h3>
+              <span className="text-lg font-semibold text-black mb-2">Resource Management</span>
               <p className="text-sm text-gray-600 leading-relaxed">Organize all your resources in one place — classrooms, labs, auditoriums, and more.</p>
             </div>
 
@@ -115,7 +129,7 @@ export default function LandingPage() {
                   <path d="M3 10h18" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-black mb-2">Smart Booking</h3>
+              <span className="text-lg font-semibold text-black mb-2">Smart Booking</span>
               <p className="text-sm text-gray-600 leading-relaxed">Easy booking process with automatic conflict detection and approval workflows.</p>
             </div>
 
@@ -126,7 +140,7 @@ export default function LandingPage() {
                   <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-black mb-2">Maintenance Tracking</h3>
+              <span className="text-lg font-semibold text-black mb-2">Maintenance Tracking</span>
               <p className="text-sm text-gray-600 leading-relaxed">Automated maintenance alerts and scheduling to keep resources in top condition.</p>
             </div>
 
@@ -138,7 +152,7 @@ export default function LandingPage() {
                   <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-black mb-2">Analytics & Reports</h3>
+              <span className="text-lg font-semibold text-black mb-2">Analytics & Reports</span>
               <p className="text-sm text-gray-600 leading-relaxed">Comprehensive reports for usage insights, booking trends, and resource optimization.</p>
             </div>
           </div>

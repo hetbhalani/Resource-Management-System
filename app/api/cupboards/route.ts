@@ -1,12 +1,10 @@
-"use server"
-
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // get all cupboards
 export const GET = async () => {
     const res = await prisma.cupboards.findMany();
-    return new NextResponse(JSON.stringify(res), {status: 200});
+    return new NextResponse(JSON.stringify(res), { status: 200 });
 }
 
 // create new cupboard

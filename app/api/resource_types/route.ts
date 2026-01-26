@@ -1,5 +1,3 @@
-"use server"
-
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,9 +20,9 @@ export const POST = async (request: NextRequest) => {
 
         return NextResponse.json(newResourceType, { status: 201 });
     } catch (error) {
-        console.error("create user error:", error);
+        console.error("create resource type error:", error);
         return NextResponse.json(
-            { error: "create user failed" },
+            { error: "create resource type failed" },
             { status: 500 }
         );
     }

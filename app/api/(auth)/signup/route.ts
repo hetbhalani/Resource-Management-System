@@ -1,18 +1,11 @@
-import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { hash } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { hash } from 'bcryptjs';
+import { prisma } from "@/lib/prisma";
 
-// get all users
-export const GET = async () => {
-    const res = await prisma.users.findMany();
-    return new NextResponse(JSON.stringify(res));
-}
-
-// create new user
-export const POST = async (request: NextRequest) => {
+export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        const body = await request.json()
 
         const user = await prisma.users.findUnique({
             where: {
@@ -24,16 +17,17 @@ export const POST = async (request: NextRequest) => {
             return NextResponse.json({ 'error': 'User already exist' }, { status: 401 })
         }
 
+        // Hash the password before storing
         const hashedPassword = await hash(body.password, 10);
 
         const newUser = await prisma.users.create({
             data: {
                 name: body.name,
                 email: body.email,
-                role: body.role,
+                role: body.role || 'user',
                 password: hashedPassword,
             }
-        });
+        })
 
         const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
         const token = jwt.sign(
@@ -42,7 +36,10 @@ export const POST = async (request: NextRequest) => {
             { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] }
         );
 
-        const res = NextResponse.json(newUser, { status: 201 });
+        const res = NextResponse.json(
+            { message: "User created successfully", user: { user_id: newUser.user_id, name: newUser.name, email: newUser.email, role: newUser.role } },
+            { status: 201 }
+        );
 
         res.cookies.set('authToken', token, {
             httpOnly: true,
@@ -53,11 +50,10 @@ export const POST = async (request: NextRequest) => {
 
         return res;
     } catch (error) {
-        console.error("create user error:", error);
+        console.error("Signup error:", error);
         return NextResponse.json(
-            { error: "create user failed" },
+            { error: "Signup failed" },
             { status: 500 }
         );
     }
 }
-

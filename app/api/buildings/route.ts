@@ -1,12 +1,10 @@
-"use server"
-
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // get all buildings
 export const GET = async () => {
     const res = await prisma.buildings.findMany();
-    return new NextResponse(JSON.stringify(res), {status: 200});
+    return new NextResponse(JSON.stringify(res), { status: 200 });
 }
 
 // create new building

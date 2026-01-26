@@ -1,12 +1,10 @@
-"use server"
-
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 // get all maintenance
 export const GET = async () => {
     const res = await prisma.maintenance.findMany();
-    return new NextResponse(JSON.stringify(res), {status: 200});
+    return new NextResponse(JSON.stringify(res), { status: 200 });
 }
 
 // create new maintenance
@@ -24,14 +22,14 @@ export const POST = async (request: NextRequest) => {
             return NextResponse.json({ error: 'resource not found' }, { status: 400 });
         }
 
-        // parse scheduled_date if provided
-        let scheduledDate: Date | undefined = undefined;
-        if (body.scheduled_date) {
-            const d = new Date(body.scheduled_date);
-            if (Number.isNaN(d.getTime())) {
-                return NextResponse.json({ error: 'invalid scheduled_date' }, { status: 400 });
-            }
-            scheduledDate = d;
+        // validate scheduled_date is required
+        if (!body.scheduled_date) {
+            return NextResponse.json({ error: 'scheduled_date is required' }, { status: 400 });
+        }
+
+        const scheduledDate = new Date(body.scheduled_date);
+        if (Number.isNaN(scheduledDate.getTime())) {
+            return NextResponse.json({ error: 'invalid scheduled_date' }, { status: 400 });
         }
 
         const newMaintenance = await prisma.maintenance.create({
