@@ -4,7 +4,7 @@ import { compare } from 'bcryptjs';
 import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
-    const { email, password } = await request.json();
+    const { email, password, role } = await request.json();
 
     const user = await prisma.users.findUnique({
         where: {
@@ -22,9 +22,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Password is wrong' }, { status: 401 });
     }
 
+    if (role && user.role !== role) {
+        return NextResponse.json({ error: `Invalid role. You are registered as ${user.role}` }, { status: 401 });
+    }
+
     const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
     const token = jwt.sign(
-        { userId: user.user_id, email: user.email },
+        { userId: user.user_id, email: user.email, name: user.name, role: user.role },
         process.env.JWT_SECRET!,
         { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] }
     )
