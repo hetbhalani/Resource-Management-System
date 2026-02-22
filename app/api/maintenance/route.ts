@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// get all maintenance
+// get all maintenance with related data
 export const GET = async () => {
-    const res = await prisma.maintenance.findMany();
-    return new NextResponse(JSON.stringify(res), { status: 200 });
+    const res = await prisma.maintenance.findMany({
+        include: {
+            resources: true,
+        },
+        orderBy: { scheduled_date: "desc" }
+    });
+    return NextResponse.json(res);
 }
 
 // create new maintenance
@@ -12,7 +17,6 @@ export const POST = async (request: NextRequest) => {
     try {
         const body = await request.json();
 
-        // validate foreign key: resource must exist
         if (!body.resource_id) {
             return NextResponse.json({ error: 'resource_id is required' }, { status: 400 });
         }
@@ -22,7 +26,6 @@ export const POST = async (request: NextRequest) => {
             return NextResponse.json({ error: 'resource not found' }, { status: 400 });
         }
 
-        // validate scheduled_date is required
         if (!body.scheduled_date) {
             return NextResponse.json({ error: 'scheduled_date is required' }, { status: 400 });
         }
@@ -37,8 +40,11 @@ export const POST = async (request: NextRequest) => {
                 resource_id: body.resource_id,
                 maintenance_type: body.maintenance_type,
                 scheduled_date: scheduledDate,
-                status: body.status,
-                notes: body.notes
+                status: body.status || "scheduled",
+                notes: body.notes || null
+            },
+            include: {
+                resources: true,
             }
         });
 

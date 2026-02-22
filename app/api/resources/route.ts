@@ -1,10 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// get all resources
+// get all resources with related data
 export const GET = async () => {
-    const res = await prisma.resources.findMany();
-    return new NextResponse(JSON.stringify(res), { status: 200 });
+    const res = await prisma.resources.findMany({
+        include: {
+            resource_types: true,
+            buildings: true,
+        },
+        orderBy: { resource_id: "desc" }
+    });
+    return NextResponse.json(res);
 }
 
 // create new resource
@@ -17,8 +23,12 @@ export const POST = async (request: NextRequest) => {
                 resource_name: body.resource_name,
                 resource_type_id: body.resource_type_id,
                 building_id: body.building_id,
-                floor_number: body.floor_number,
-                description: body.description
+                floor_number: body.floor_number || null,
+                description: body.description || null
+            },
+            include: {
+                resource_types: true,
+                buildings: true,
             }
         });
 

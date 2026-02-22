@@ -1,10 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-// get all resource_types
+// get all resource_types with resource count
 export const GET = async () => {
-    const res = await prisma.resource_types.findMany();
-    return new NextResponse(JSON.stringify(res));
+    const res = await prisma.resource_types.findMany({
+        orderBy: { resource_type_id: "desc" },
+        include: {
+            _count: {
+                select: { resources: true }
+            }
+        }
+    });
+    return NextResponse.json(res);
 }
 
 // create new resource_types
@@ -27,4 +34,3 @@ export const POST = async (request: NextRequest) => {
         );
     }
 }
-

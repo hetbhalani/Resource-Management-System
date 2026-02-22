@@ -5,46 +5,42 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
     LayoutDashboard,
-    Users,
     Box,
     Calendar,
-    Settings,
     LogOut,
     Menu,
     X,
     Wrench,
-    FileText,
+    Building2,
+    Tags,
     Sun,
     Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
+import { useUser } from "./UserProvider";
 
-const sidebarItems = [
-    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-    { icon: Box, label: "Resources", href: "/dashboard/resources" },
-    { icon: Calendar, label: "Bookings", href: "/dashboard/bookings" },
-    { icon: Wrench, label: "Maintenance", href: "/dashboard/maintenance" },
-    { icon: Users, label: "Users", href: "/dashboard/users" },
-    { icon: FileText, label: "Reports", href: "/dashboard/reports" },
-    { icon: Settings, label: "Settings", href: "/dashboard/settings" },
+const allSidebarItems = [
+    { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", roles: ["admin", "student", "faculty"] },
+    { icon: Box, label: "Resources", href: "/dashboard/resources", roles: ["admin"] },
+    { icon: Calendar, label: "Bookings", href: "/dashboard/bookings", roles: ["admin", "student", "faculty"] },
+    { icon: Building2, label: "Buildings", href: "/dashboard/buildings", roles: ["admin"] },
+    { icon: Tags, label: "Resource Types", href: "/dashboard/resource-types", roles: ["admin"] },
+    { icon: Wrench, label: "Maintenance", href: "/dashboard/maintenance", roles: ["admin", "student", "faculty"] },
 ];
-
-interface User {
-    userId: string;
-    name: string;
-    email: string;
-    role: string;
-}
 
 export const Sidebar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
     const pathname = usePathname();
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const { user } = useUser();
+
+    const sidebarItems = allSidebarItems.filter(item =>
+        item.roles.includes(user?.role || "student")
+    );
 
     useEffect(() => {
         const checkMobile = () => {
@@ -55,23 +51,6 @@ export const Sidebar = () => {
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    // Fetch user data from JWT
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const res = await fetch("/api/me");
-                if (res.ok) {
-                    const data = await res.json();
-                    console.log("User data:", data); // This will show the actual user data
-                    setUser(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch user:", error);
-            }
-        };
-        fetchUser();
-    }, []);
-    
     const getTransformX = () => {
         if (isMobile) {
             return mobileOpen ? 0 : "-100%";
@@ -79,7 +58,6 @@ export const Sidebar = () => {
         return 0;
     };
 
-    // Calculate initials from user's name
     const getInitials = (name: string) => {
         if (!name) return "X";
         const words = name.trim().split(/\s+/);
@@ -87,6 +65,15 @@ export const Sidebar = () => {
             return words[0].substring(0, 2).toUpperCase();
         }
         return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    };
+
+    const getRoleBadgeColor = (role: string) => {
+        switch (role) {
+            case "admin": return "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400";
+            case "faculty": return "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400";
+            case "student": return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+            default: return "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
+        }
     };
 
     return (
@@ -106,15 +93,13 @@ export const Sidebar = () => {
             {/* Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{
-                    x: getTransformX()
-                }}
+                animate={{ x: getTransformX() }}
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="fixed left-0 top-0 h-screen w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-40 flex flex-col shadow-lg"
             >
                 {/* Logo */}
                 <div className="h-16 flex items-center px-5 border-b border-slate-100 dark:border-slate-800">
-                    <Link href="/" className="flex items-center gap-3 group">
+                    <Link href="/dashboard" className="flex items-center gap-3 group">
                         <div className="relative ms-9 h-20 w-40 overflow-hidden">
                             <Image
                                 src={theme === "dark" ? "/white_logo.png" : "/black_logo.png"}
@@ -131,7 +116,7 @@ export const Sidebar = () => {
                 {/* Navigation */}
                 <nav className="flex-1 py-5 px-4 space-y-1 overflow-y-auto">
                     {sidebarItems.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
                         return (
                             <Link
                                 key={item.href}
@@ -140,7 +125,7 @@ export const Sidebar = () => {
                             >
                                 <div
                                     className={cn(
-                                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150",
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 relative",
                                         isActive
                                             ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 shadow-sm"
                                             : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200"
@@ -193,32 +178,32 @@ export const Sidebar = () => {
                     </button>
 
                     {/* User Profile */}
-                    <div className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+                    <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                         <div className="min-w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-xs">
                             {user ? getInitials(user.name) : "?"}
                         </div>
-                        <>
-                            <div className="flex-1 overflow-hidden">
-                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">
-                                    {user?.name || "Loading..."}
-                                </p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                    {user?.email || "example@gmail.com"}
-                                </p>
-                            </div>
-                            <LogOut size={16} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer" 
-                                onClick={async () => {
-                                    try {
-                                        const res = await fetch("/api/logout", { method: "POST" });
-                                        if (res.ok) {
-                                            router.push('/');
-                                        }
-                                    } catch (error) {
-                                        console.error("Logout failed:", error);
-                                    }
-                                }}
-                            />
-                        </>
+                        <div className="flex-1 overflow-hidden">
+                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">
+                                {user?.name || "Loading..."}
+                            </p>
+                            <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${user?.role ? getRoleBadgeColor(user.role) : ""}`}>
+                                {user?.role || ""}
+                            </span>
+                        </div>
+                        <button
+                            onClick={async () => {
+                                try {
+                                    const res = await fetch("/api/logout", { method: "POST" });
+                                    if (res.ok) router.push("/");
+                                } catch (error) {
+                                    console.error("Logout failed:", error);
+                                }
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                            title="Logout"
+                        >
+                            <LogOut size={16} />
+                        </button>
                     </div>
                 </div>
             </motion.aside>

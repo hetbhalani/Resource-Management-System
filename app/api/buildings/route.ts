@@ -3,8 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 // get all buildings
 export const GET = async () => {
-    const res = await prisma.buildings.findMany();
-    return new NextResponse(JSON.stringify(res), { status: 200 });
+    const res = await prisma.buildings.findMany({
+        orderBy: { building_id: "desc" },
+        include: {
+            _count: {
+                select: { resources: true }
+            }
+        }
+    });
+    return NextResponse.json(res);
 }
 
 // create new building
@@ -15,8 +22,8 @@ export const POST = async (request: NextRequest) => {
         const newBuilding = await prisma.buildings.create({
             data: {
                 building_name: body.building_name,
-                building_number: body.building_number,
-                total_floors: body.total_floors,
+                building_number: body.building_number || null,
+                total_floors: body.total_floors || null,
             }
         });
 
