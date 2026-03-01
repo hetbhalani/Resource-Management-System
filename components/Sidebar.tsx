@@ -17,7 +17,7 @@ import {
     Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
 import { useUser } from "./UserProvider";
 
@@ -33,6 +33,7 @@ const allSidebarItems = [
 export const Sidebar = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [hoveredItem, setHoveredItem] = useState<string | null>(null);
     const pathname = usePathname();
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
@@ -76,11 +77,20 @@ export const Sidebar = () => {
         }
     };
 
+    const getRoleGradient = (role: string) => {
+        switch (role) {
+            case "admin": return "from-rose-500 to-pink-600";
+            case "faculty": return "from-indigo-500 to-violet-600";
+            case "student": return "from-emerald-500 to-teal-600";
+            default: return "from-slate-500 to-slate-600";
+        }
+    };
+
     return (
         <>
             {/* Mobile Menu Button */}
             <button
-                className="lg:hidden fixed top-5 left-5 z-50 p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700"
+                className="lg:hidden fixed top-5 left-5 z-50 p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 active:scale-95 transition-transform"
                 onClick={() => setMobileOpen(!mobileOpen)}
             >
                 {mobileOpen ? (
@@ -114,7 +124,7 @@ export const Sidebar = () => {
                 </div>
 
                 {/* Navigation */}
-                <nav className="flex-1 py-5 px-4 space-y-1 overflow-y-auto">
+                <nav className="flex-1 py-5 px-3 space-y-1 overflow-hidden">
                     {sidebarItems.map((item) => {
                         const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
                         return (
@@ -125,30 +135,43 @@ export const Sidebar = () => {
                             >
                                 <div
                                     className={cn(
-                                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 relative",
+                                        "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative group",
                                         isActive
-                                            ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 shadow-sm"
-                                            : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200"
+                                            ? "bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300"
+                                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/70 hover:text-slate-700 dark:hover:text-slate-200"
                                     )}
+                                    onMouseEnter={() => setHoveredItem(item.href)}
+                                    onMouseLeave={() => setHoveredItem(null)}
                                 >
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="sidebar-active"
-                                            className="absolute left-0 w-1 h-8 bg-violet-600 rounded-r-full"
-                                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+
+                                    <div className={cn(
+                                        "flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200",
+                                        isActive
+                                            ? "bg-violet-100 dark:bg-violet-800/40"
+                                            : "bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-700/50"
+                                    )}>
+                                        <item.icon
+                                            size={19}
+                                            strokeWidth={isActive ? 2.2 : 1.8}
+                                            className={cn(
+                                                "transition-colors duration-200",
+                                                isActive ? "text-violet-600 dark:text-violet-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                                            )}
                                         />
-                                    )}
-                                    <item.icon
-                                        size={20}
-                                        strokeWidth={isActive ? 2.5 : 2}
-                                        className={cn(
-                                            "min-w-[20px]",
-                                            isActive ? "text-violet-600 dark:text-violet-400" : "text-slate-400 dark:text-slate-500"
-                                        )}
-                                    />
-                                    <span className={cn("text-sm", isActive ? "font-semibold" : "font-medium")}>
+                                    </div>
+                                    <span className={cn(
+                                        "text-[13px] tracking-wide transition-colors duration-200",
+                                        isActive ? "font-semibold" : "font-medium"
+                                    )}>
                                         {item.label}
                                     </span>
+
+                                    {/* Tooltip — shows on hover for desktop only */}
+                                    {!isMobile && hoveredItem === item.href && !isActive && (
+                                        <div className="sidebar-tooltip">
+                                            {item.label}
+                                        </div>
+                                    )}
                                 </div>
                             </Link>
                         );
@@ -161,32 +184,45 @@ export const Sidebar = () => {
                     <button
                         onClick={toggleTheme}
                         className={cn(
-                            "flex items-center gap-3 w-full p-2.5 rounded-xl transition-colors",
-                            "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
+                            "flex items-center gap-3 w-full p-2.5 rounded-xl transition-all duration-200",
+                            "hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 group"
                         )}
                     >
-                        <div className="min-w-9 h-9 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center">
-                            {theme === "light" ? (
-                                <Moon size={18} className="text-sky-600 dark:text-sky-400" />
-                            ) : (
-                                <Sun size={18} className="text-sky-600 dark:text-sky-400" />
-                            )}
+                        <div className="min-w-9 h-9 rounded-lg bg-sky-50 dark:bg-sky-900/20 flex items-center justify-center overflow-hidden">
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={theme}
+                                    initial={{ y: 20, opacity: 0, rotate: -90 }}
+                                    animate={{ y: 0, opacity: 1, rotate: 0 }}
+                                    exit={{ y: -20, opacity: 0, rotate: 90 }}
+                                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                                >
+                                    {theme === "light" ? (
+                                        <Moon size={17} className="text-sky-600 dark:text-sky-400" />
+                                    ) : (
+                                        <Sun size={17} className="text-amber-500" />
+                                    )}
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
-                        <span className="text-sm font-medium">
+                        <span className="text-[13px] font-medium group-hover:text-slate-700 dark:group-hover:text-slate-200 transition-colors">
                             {theme === "light" ? "Dark Mode" : "Light Mode"}
                         </span>
                     </button>
 
                     {/* User Profile */}
                     <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <div className="min-w-9 h-9 rounded-full bg-indigo-600 flex items-center justify-center text-white font-semibold text-xs">
+                        <div className={cn(
+                            "min-w-9 h-9 rounded-full bg-gradient-to-br flex items-center justify-center text-white font-semibold text-xs ring-2 ring-white dark:ring-slate-800 shadow-sm",
+                            getRoleGradient(user?.role || "")
+                        )}>
                             {user ? getInitials(user.name) : "?"}
                         </div>
                         <div className="flex-1 overflow-hidden">
-                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">
+                            <p className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 truncate">
                                 {user?.name || "Loading..."}
                             </p>
-                            <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase ${user?.role ? getRoleBadgeColor(user.role) : ""}`}>
+                            <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide ${user?.role ? getRoleBadgeColor(user.role) : ""}`}>
                                 {user?.role || ""}
                             </span>
                         </div>
@@ -199,7 +235,7 @@ export const Sidebar = () => {
                                     console.error("Logout failed:", error);
                                 }
                             }}
-                            className="p-1.5 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all duration-200 active:scale-90"
                             title="Logout"
                         >
                             <LogOut size={16} />
@@ -209,14 +245,18 @@ export const Sidebar = () => {
             </motion.aside>
 
             {/* Mobile Overlay */}
-            {mobileOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="fixed inset-0 bg-black/40 z-30 lg:hidden"
-                    onClick={() => setMobileOpen(false)}
-                />
-            )}
+            <AnimatePresence>
+                {mobileOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-30 lg:hidden"
+                        onClick={() => setMobileOpen(false)}
+                    />
+                )}
+            </AnimatePresence>
         </>
     );
 };
