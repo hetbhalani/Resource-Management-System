@@ -7,6 +7,14 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
+        // Only student and faculty can sign up — admin is pre-seeded
+        if (body.role === 'admin') {
+            return NextResponse.json(
+                { error: 'Admin accounts cannot be created via signup' },
+                { status: 403 }
+            );
+        }
+
         const user = await prisma.users.findUnique({
             where: {
                 email: body.email
