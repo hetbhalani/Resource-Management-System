@@ -27,7 +27,7 @@ const allSidebarItems = [
     { icon: Calendar, label: "Bookings", href: "/dashboard/bookings", roles: ["admin", "student", "faculty"] },
     { icon: Building2, label: "Buildings", href: "/dashboard/buildings", roles: ["admin"] },
     { icon: Tags, label: "Resource Types", href: "/dashboard/resource-types", roles: ["admin"] },
-    { icon: Wrench, label: "Maintenance", href: "/dashboard/maintenance", roles: ["admin", "student", "faculty"] },
+    { icon: Wrench, label: "Maintenance", href: "/dashboard/maintenance", roles: ["admin", "student", "faculty", "maintainer"] },
 ];
 
 export const Sidebar = () => {
@@ -73,6 +73,7 @@ export const Sidebar = () => {
             case "admin": return "bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400";
             case "faculty": return "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400";
             case "student": return "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400";
+            case "maintainer": return "bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400";
             default: return "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
         }
     };
@@ -82,6 +83,7 @@ export const Sidebar = () => {
             case "admin": return "from-rose-500 to-pink-600";
             case "faculty": return "from-indigo-500 to-violet-600";
             case "student": return "from-emerald-500 to-teal-600";
+            case "maintainer": return "from-teal-500 to-cyan-600";
             default: return "from-slate-500 to-slate-600";
         }
     };

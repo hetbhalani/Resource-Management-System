@@ -12,6 +12,7 @@ interface UserContextType {
     user: User | null;
     loading: boolean;
     isAdmin: boolean;
+    isMaintainer: boolean;
     refetch: () => void;
 }
 
@@ -19,6 +20,7 @@ const UserContext = createContext<UserContextType>({
     user: null,
     loading: true,
     isAdmin: false,
+    isMaintainer: false,
     refetch: () => { },
 });
 
@@ -51,9 +53,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             user,
             loading,
             isAdmin: user?.role === "admin",
+            isMaintainer: user?.role === "maintainer",
             refetch: fetchUser,
         }}>
             {children}
         </UserContext.Provider>
     );
 }
+

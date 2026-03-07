@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] }
     )
 
-    const res = NextResponse.json({ "message": "Login successful" })
+    const res = NextResponse.json({ "message": "Login successful", user: { user_id: user.user_id, name: user.name, email: user.email, role: user.role } })
 
     res.cookies.set('authToken', token, {
         httpOnly: true,

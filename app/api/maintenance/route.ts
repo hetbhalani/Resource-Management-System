@@ -1,11 +1,30 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/jwt";
 
 // get all maintenance with related data
+// Auto-complete: mark scheduled/in_progress records as completed once their end_datetime passes
 export const GET = async () => {
+    const now = new Date();
+
+    // Auto-complete past maintenance
+    await prisma.maintenance.updateMany({
+        where: {
+            status: { in: ["scheduled", "in_progress"] },
+            end_datetime: { lt: now },
+        },
+        data: { status: "completed" },
+    });
+
     const res = await prisma.maintenance.findMany({
         include: {
-            resources: true,
+            resources: {
+                include: {
+                    resource_types: true,
+                    buildings: true,
+                }
+            },
+            users: true,
         },
         orderBy: { scheduled_date: "desc" }
     });
@@ -17,6 +36,13 @@ export const POST = async (request: NextRequest) => {
     try {
         const body = await request.json();
 
+        // Get user from JWT
+        const token = request.cookies.get("authToken")?.value;
+        if (!token) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        const jwtUser = verifyToken(token);
+
         if (!body.resource_id) {
             return NextResponse.json({ error: 'resource_id is required' }, { status: 400 });
         }
@@ -26,25 +52,34 @@ export const POST = async (request: NextRequest) => {
             return NextResponse.json({ error: 'resource not found' }, { status: 400 });
         }
 
-        if (!body.scheduled_date) {
-            return NextResponse.json({ error: 'scheduled_date is required' }, { status: 400 });
+        // Build scheduled_date: use provided or default to now (for "reported" issues)
+        let scheduledDate: Date;
+        if (body.start_datetime) {
+            scheduledDate = new Date(body.start_datetime);
+        } else if (body.scheduled_date) {
+            scheduledDate = new Date(body.scheduled_date);
+        } else {
+            scheduledDate = new Date(); // default for reported issues
         }
 
-        const scheduledDate = new Date(body.scheduled_date);
         if (Number.isNaN(scheduledDate.getTime())) {
-            return NextResponse.json({ error: 'invalid scheduled_date' }, { status: 400 });
+            return NextResponse.json({ error: 'invalid date' }, { status: 400 });
         }
 
         const newMaintenance = await prisma.maintenance.create({
             data: {
                 resource_id: body.resource_id,
-                maintenance_type: body.maintenance_type,
+                reported_by: Number(jwtUser.userId),
+                maintenance_type: body.maintenance_type || "other",
                 scheduled_date: scheduledDate,
-                status: body.status || "scheduled",
+                start_datetime: body.start_datetime ? new Date(body.start_datetime) : null,
+                end_datetime: body.end_datetime ? new Date(body.end_datetime) : null,
+                status: body.status || "reported",
                 notes: body.notes || null
             },
             include: {
                 resources: true,
+                users: true,
             }
         });
 

@@ -29,6 +29,11 @@ export const GET = async (request: NextRequest) => {
                 resource_types: true,
                 buildings: true,
                 facilities: true,
+                maintenance: {
+                    where: {
+                        status: { in: ["scheduled", "in_progress", "reported"] }
+                    }
+                },
             },
             orderBy: { resource_name: "asc" },
         });

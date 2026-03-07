@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
-        // Only student and faculty can sign up — admin is pre-seeded
+        // Only student and faculty can sign up — admin and maintainer are pre-seeded
         if (body.role === 'admin') {
             return NextResponse.json(
                 { error: 'Admin accounts cannot be created via signup' },

@@ -18,6 +18,7 @@ import {
   PieChart as PieChartIcon
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/components/UserProvider";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -106,7 +107,13 @@ export default function DashboardPage() {
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user, isAdmin } = useUser();
+  const { user, isAdmin, isMaintainer } = useUser();
+  const router = useRouter();
+
+  // Redirect maintainer to their only page
+  useEffect(() => {
+    if (isMaintainer) router.replace("/dashboard/maintenance");
+  }, [isMaintainer, router]);
 
   useEffect(() => {
     const fetchStats = async () => {

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, GraduationCap, UserCog, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, GraduationCap, UserCog, ShieldCheck, Wrench } from "lucide-react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState<"student" | "faculty" | "admin">("faculty");
+  const [role, setRole] = useState<"student" | "faculty" | "admin" | "maintainer">("faculty");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [shakeError, setShakeError] = useState(false);
@@ -97,9 +97,14 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }),
       {
         loading: mode === "login" ? "Signing in..." : "Creating your account...",
-        success: () => {
+        success: (data) => {
           onClose();
-          router.push("/dashboard");
+          // Maintainer only has access to maintenance page
+          if (data?.user?.role === "maintainer" || role === "maintainer") {
+            router.push("/dashboard/maintenance");
+          } else {
+            router.push("/dashboard");
+          }
           return mode === "login"
             ? "Welcome back! You have been logged in successfully."
             : "Account created! You can now access all features.";
@@ -116,11 +121,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
     ? ([
       { value: "student" as const, label: "Student", icon: GraduationCap, color: "emerald" },
       { value: "faculty" as const, label: "Faculty", icon: UserCog, color: "indigo" },
+      { value: "maintainer" as const, label: "Maintainer", icon: Wrench, color: "teal" },
     ])
     : ([
       { value: "student" as const, label: "Student", icon: GraduationCap, color: "emerald" },
       { value: "faculty" as const, label: "Faculty", icon: UserCog, color: "indigo" },
       { value: "admin" as const, label: "Admin", icon: ShieldCheck, color: "rose" },
+      { value: "maintainer" as const, label: "Maintainer", icon: Wrench, color: "teal" },
     ]);
 
   if (!isOpen) return null;
@@ -317,6 +324,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                         emerald: { selected: "border-emerald-400 bg-emerald-50 ring-1 ring-emerald-400/20", border: "border-gray-200" },
                         indigo: { selected: "border-indigo-400 bg-indigo-50 ring-1 ring-indigo-400/20", border: "border-gray-200" },
                         rose: { selected: "border-rose-400 bg-rose-50 ring-1 ring-rose-400/20", border: "border-gray-200" },
+                        teal: { selected: "border-teal-400 bg-teal-50 ring-1 ring-teal-400/20", border: "border-gray-200" },
                       };
                       const colors = colorMap[opt.color] || colorMap.indigo;
 
@@ -331,7 +339,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
                             name="role"
                             value={opt.value}
                             checked={isSelected}
-                            onChange={(e) => setRole(e.target.value as "student" | "faculty" | "admin")}
+                            onChange={(e) => setRole(e.target.value as "student" | "faculty" | "admin" | "maintainer")}
                             className="sr-only"
                           />
                           <opt.icon size={18} className={isSelected ? `text-${opt.color}-600` : "text-gray-400"} strokeWidth={isSelected ? 2.2 : 1.6} />
