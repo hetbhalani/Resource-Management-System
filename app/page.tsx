@@ -340,12 +340,12 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-950 tracking-tight leading-[1.05] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">
+            <span className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-950 tracking-tight leading-[1.05] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">
               Manage Resources
               <span className="block mt-2 bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">
                 Without the Chaos
               </span>
-            </h1>
+            </span>
           </motion.div>
 
           <motion.p
@@ -498,13 +498,13 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-sm font-semibold mb-4">
               Features
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
+            <span className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
               Everything you need to manage
               <br />
               <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
                 your resources
               </span>
-            </h2>
+            </span>
             <p className="text-lg text-gray-500 max-w-2xl mx-auto">
               Powerful features designed to help you organize, track, and
               optimize all your organizational resources — effortlessly.
@@ -542,9 +542,9 @@ export default function LandingPage() {
                   >
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="relative text-lg font-semibold text-gray-900 mb-2">
+                  <span className="relative text-lg font-semibold text-gray-900 mb-2">
                     {feature.title}
-                  </h3>
+                  </span>
                   <p className="relative text-sm text-gray-500 leading-relaxed">
                     {feature.description}
                   </p>
@@ -571,12 +571,12 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-violet-50 text-violet-600 text-sm font-semibold mb-4">
               How It Works
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
+            <span className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
               Up and running in{" "}
               <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
                 minutes
               </span>
-            </h2>
+            </span>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
               Three simple steps to transform your resource management workflow.
             </p>
@@ -602,9 +602,9 @@ export default function LandingPage() {
                       {item.step}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  <span className="text-xl font-semibold text-gray-900 mb-3">
                     {item.title}
-                  </h3>
+                  </span>
                   <p className="text-sm text-gray-500 leading-relaxed max-w-xs mx-auto">
                     {item.description}
                   </p>
@@ -631,12 +631,12 @@ export default function LandingPage() {
             <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-sm font-semibold mb-4">
               Testimonials
             </span>
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
+            <span className="text-3xl md:text-5xl font-bold text-gray-900 mb-5 tracking-tight">
               Loved by teams{" "}
               <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
                 everywhere
               </span>
-            </h2>
+            </span>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -696,12 +696,12 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-sm font-semibold mb-6">
                 Why Resourcify?
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
+              <span className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
                 Built for teams that need{" "}
                 <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
                   real results
                 </span>
-              </h2>
+              </span>
               <div className="space-y-5">
                 {[
                   "Real-time availability and conflict detection",
@@ -782,11 +782,11 @@ export default function LandingPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+            <span className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tight">
               Ready to streamline your
               <br />
               resource management?
-            </h2>
+            </span>
             <p className="text-lg text-white/70 mb-10 max-w-xl mx-auto">
               Join hundreds of organizations that have already transformed their
               workflows with Resourcify.
@@ -845,9 +845,9 @@ export default function LandingPage() {
               },
             ].map((col) => (
               <div key={col.title}>
-                <h4 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
+                <span className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
                   {col.title}
-                </h4>
+                </span>
                 <ul className="space-y-3 list-none p-0 m-0">
                   {col.links.map((link) => (
                     <li key={link}>
