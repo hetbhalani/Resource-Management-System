@@ -336,11 +336,11 @@ export default function LandingPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight leading-[1.05]">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-950 tracking-tight leading-[1.05] drop-shadow-[0_1px_0_rgba(255,255,255,0.35)]">
               Manage Resources
               <span className="block mt-2 bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 bg-clip-text text-transparent">
                 Without the Chaos
@@ -349,7 +349,7 @@ export default function LandingPage() {
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
             className="text-base md:text-lg text-gray-500 leading-relaxed max-w-2xl mx-auto mt-8 mb-10"
