@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate, type Variants } from "framer-motion";
 import {
   Box,
   CalendarCheck,
@@ -218,8 +218,8 @@ const RESOURCE_TYPE_COLORS = [
 interface AdminDashboardProps {
   stats: AdminStats | null;
   user: { name: string; role: string } | null;
-  containerVariants: Record<string, unknown>;
-  itemVariants: Record<string, unknown>;
+  containerVariants: Variants;
+  itemVariants: Variants;
 }
 
 function AdminDashboard({ stats, user, containerVariants, itemVariants }: AdminDashboardProps) {
@@ -398,7 +398,7 @@ function AdminDashboard({ stats, user, containerVariants, itemVariants }: AdminD
                           fontSize: "12px",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                         }}
-                        formatter={(value: number, name: string) => [value, name.charAt(0).toUpperCase() + name.slice(1)]}
+                        formatter={(value: number | undefined, name: string | undefined) => [value ?? 0, name ? name.charAt(0).toUpperCase() + name.slice(1) : ""]}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -590,8 +590,8 @@ function AdminDashboard({ stats, user, containerVariants, itemVariants }: AdminD
 interface UserDashboardProps {
   stats: UserStats | null;
   user: { name: string; role: string } | null;
-  containerVariants: Record<string, unknown>;
-  itemVariants: Record<string, unknown>;
+  containerVariants: Variants;
+  itemVariants: Variants;
 }
 
 function UserDashboard({ stats, user, containerVariants, itemVariants }: UserDashboardProps) {
@@ -771,7 +771,7 @@ interface StatCardProps {
   value: number;
   icon: React.ElementType;
   gradient: string;
-  variants: Record<string, unknown>;
+  variants: Variants;
   highlight?: boolean;
 }
 

@@ -557,7 +557,7 @@ function ScheduleTimetablePopup({ record, onClose, onScheduled }: { record: Main
         try {
             const res = await fetch(`/api/maintenance/${record.maintenance_id}`, {
                 method: "PUT", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "scheduled", scheduled_date: startDt.toISOString(), start_datetime: startDt.toISOString(), end_datetime: endDt.toISOString() }),
+                body: JSON.stringify({ status: "scheduled", scheduled_date: startDt.toISOString() }),
             });
             if (res.ok) { toast.success("Maintenance scheduled!"); onScheduled(); } else { toast.error("Failed to schedule"); }
         } catch { toast.error("Something went wrong"); } finally { setSubmitting(false); }

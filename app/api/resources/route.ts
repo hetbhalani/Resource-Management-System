@@ -17,12 +17,25 @@ export const GET = async () => {
 export const POST = async (request: NextRequest) => {
     try {
         const body = await request.json();
+        const resourceTypeId = Number(body.resource_type_id);
+        const buildingId = Number(body.building_id);
+
+        if (!resourceTypeId || !buildingId) {
+            return NextResponse.json(
+                { error: "resource_type_id and building_id are required" },
+                { status: 400 }
+            );
+        }
 
         const newResource = await prisma.resources.create({
             data: {
                 resource_name: body.resource_name,
-                resource_type_id: body.resource_type_id,
-                building_id: body.building_id,
+                resource_types: {
+                    connect: { resource_type_id: resourceTypeId },
+                },
+                buildings: {
+                    connect: { building_id: buildingId },
+                },
                 floor_number: body.floor_number || null,
                 description: body.description || null
             },

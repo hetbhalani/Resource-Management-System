@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useUser } from "@/components/UserProvider";
 
 interface ResourceType {
-    type_id: number;
+    resource_type_id: number;
     type_name: string;
     _count?: { resources: number };
 }
@@ -54,7 +54,7 @@ export default function ResourceTypesPage() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            const url = editType ? `/api/resource-types/${editType.type_id}` : "/api/resource-types";
+            const url = editType ? `/api/resource-types/${editType.resource_type_id}` : "/api/resource-types";
             const method = editType ? "PUT" : "POST";
             const res = await fetch(url, {
                 method, headers: { "Content-Type": "application/json" },
@@ -126,7 +126,7 @@ export default function ResourceTypesPage() {
                     {types.map((type, i) => {
                         const color = TYPE_COLORS[i % TYPE_COLORS.length];
                         return (
-                            <motion.div key={type.type_id} variants={cardVariants}
+                            <motion.div key={type.resource_type_id} variants={cardVariants}
                                 className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 card-interactive group overflow-hidden">
                                 <div className="p-5">
                                     <div className="flex items-start justify-between mb-4">
@@ -139,7 +139,7 @@ export default function ResourceTypesPage() {
                                                     className="p-1.5 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 rounded-lg transition-all active:scale-90">
                                                     <Pencil size={14} />
                                                 </button>
-                                                <button onClick={() => handleDelete(type.type_id)}
+                                                <button onClick={() => handleDelete(type.resource_type_id)}
                                                     className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all active:scale-90">
                                                     <Trash2 size={14} />
                                                 </button>

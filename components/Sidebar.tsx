@@ -14,7 +14,8 @@ import {
     Building2,
     Tags,
     Sun,
-    Moon
+    Moon,
+    Package
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +25,7 @@ import { useUser } from "./UserProvider";
 const allSidebarItems = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", roles: ["admin", "student", "faculty"] },
     { icon: Box, label: "Resources", href: "/dashboard/resources", roles: ["admin"] },
+    { icon: Package, label: "Cupboards", href: "/dashboard/cupboards", roles: ["admin", "student", "faculty"] },
     { icon: Calendar, label: "Bookings", href: "/dashboard/bookings", roles: ["admin", "student", "faculty"] },
     { icon: Building2, label: "Buildings", href: "/dashboard/buildings", roles: ["admin"] },
     { icon: Tags, label: "Resource Types", href: "/dashboard/resource-types", roles: ["admin"] },

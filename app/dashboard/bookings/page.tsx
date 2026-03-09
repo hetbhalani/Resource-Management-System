@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Calendar, Search, Check, X, Ban, Loader2, Box, Clock, Shield,
     ChevronLeft, ChevronRight, Building2, Layers, MapPin, Info,
-    Wifi, Monitor, Projector, Wind, Zap, Coffee
+    Wifi, Monitor, Projector, Wind, Zap, Coffee, CheckCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@/components/UserProvider";
@@ -594,14 +594,15 @@ interface ResourceSelectionPopupProps {
 }
 
 function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, onBooked }: ResourceSelectionPopupProps) {
-    const [step, setStep] = useState<1 | 2 | 3>(1);
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
     const [buildings, setBuildings] = useState<Building[]>([]);
     const [resources, setResources] = useState<Resource[]>([]);
     const [selectedBuilding, setSelectedBuilding] = useState<Building | null>(null);
     const [selectedFloor, setSelectedFloor] = useState<number | null>(null);
+    const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
     const [loadingBuildings, setLoadingBuildings] = useState(true);
     const [loadingResources, setLoadingResources] = useState(false);
-    const [submittingId, setSubmittingId] = useState<number | null>(null);
+    const [submittingBooking, setSubmittingBooking] = useState(false);
 
     // Resource IDs that are already booked for this time slot
     const bookedResourceIds = new Set(conflictingBookings.map(b => b.resource_id));
@@ -635,9 +636,15 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
         setStep(3);
     };
 
-    const handleSubmitBooking = async (resourceId: number, e: React.MouseEvent) => {
+    const handleSelectResource = (resource: Resource, e: React.MouseEvent) => {
         e.stopPropagation();
-        setSubmittingId(resourceId);
+        setSelectedResource(resource);
+        setStep(4);
+    };
+
+    const handleSubmitBooking = async () => {
+        if (!selectedResource) return;
+        setSubmittingBooking(true);
         try {
             const startDatetime = new Date(dayDate);
             startDatetime.setHours(slot.startH, slot.startM, 0, 0);
@@ -648,7 +655,7 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    resource_id: resourceId,
+                    resource_id: selectedResource.resource_id,
                     start_datetime: startDatetime.toISOString(),
                     end_datetime: endDatetime.toISOString(),
                 }),
@@ -664,7 +671,7 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
         } catch {
             toast.error("Something went wrong");
         } finally {
-            setSubmittingId(null);
+            setSubmittingBooking(false);
         }
     };
 
@@ -705,13 +712,15 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
                         {[
                             { num: 1, label: "Building" },
                             { num: 2, label: "Floor" },
-                            { num: 3, label: "Resource" }
+                            { num: 3, label: "Resource" },
+                            { num: 4, label: "Confirm" }
                         ].map((s, idx) => (
                             <React.Fragment key={s.num}>
                                 <button
                                     onClick={() => {
-                                        if (s.num === 1) { setStep(1); setSelectedBuilding(null); setSelectedFloor(null); }
-                                        else if (s.num === 2 && selectedBuilding) { setStep(2); setSelectedFloor(null); }
+                                        if (s.num === 1) { setStep(1); setSelectedBuilding(null); setSelectedFloor(null); setSelectedResource(null); }
+                                        else if (s.num === 2 && selectedBuilding) { setStep(2); setSelectedFloor(null); setSelectedResource(null); }
+                                        else if (s.num === 3 && selectedFloor) { setStep(3); setSelectedResource(null); }
                                     }}
                                     disabled={s.num > step}
                                     className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-medium transition-all duration-200 ${step === s.num
@@ -724,7 +733,7 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
                                     {step > s.num ? <Check size={11} /> : <span className="w-3.5 h-3.5 rounded-full bg-current/20 flex items-center justify-center text-[9px]">{s.num}</span>}
                                     {s.label}
                                 </button>
-                                {idx < 2 && (
+                                {idx < 3 && (
                                     <div className={`flex-1 h-px transition-colors duration-300 ${step > idx + 1 ? "bg-emerald-300 dark:bg-emerald-700" : "bg-slate-200 dark:bg-slate-700"}`} />
                                 )}
                             </React.Fragment>
@@ -835,11 +844,10 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
                                                             </span>
                                                         ) : (
                                                             <button
-                                                                onClick={(e) => handleSubmitBooking(r.resource_id, e)}
-                                                                disabled={submittingId !== null}
-                                                                className="text-[11px] font-semibold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30 px-3 py-1.5 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors active:scale-95 disabled:opacity-50 cursor-pointer"
+                                                                onClick={(e) => handleSelectResource(r, e)}
+                                                                className="text-[11px] font-semibold text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/30 px-3 py-1.5 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors active:scale-95 cursor-pointer"
                                                             >
-                                                                {submittingId === r.resource_id ? <Loader2 size={13} className="animate-spin" /> : "Book"}
+                                                                Select
                                                             </button>
                                                         )}
                                                     </div>
@@ -877,12 +885,52 @@ function ResourceSelectionPopup({ dayDate, slot, conflictingBookings, onClose, o
                                 )}
                             </motion.div>
                         )}
+
+                        {/* Step 4: Confirmation */}
+                        {step === 4 && selectedResource && (
+                            <motion.div key="step4" initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 15 }} transition={{ duration: 0.2 }} className="text-center py-6 px-4">
+                                <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <MapPin size={36} className="text-emerald-600 dark:text-emerald-400" />
+                                    <div className="absolute ml-12 mt-12 bg-white dark:bg-slate-800 rounded-full p-1 shadow-sm">
+                                        <CheckCircle size={20} className="text-emerald-500" />
+                                    </div>
+                                </div>
+
+                                <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">Ready to Book?</h2>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto mb-8 leading-relaxed">
+                                    You are booking <span className="font-bold text-slate-700 dark:text-slate-200">{selectedResource.resource_name}</span> in {selectedBuilding?.building_name} on <span className="font-bold text-slate-700 dark:text-slate-200">{formattedDate}</span> for the <span className="font-bold text-slate-700 dark:text-slate-200">{slot.label}</span> slot.
+                                </p>
+
+                                <div className="flex gap-3 justify-center">
+                                    <button
+                                        onClick={() => setStep(3)}
+                                        disabled={submittingBooking}
+                                        className="px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-colors disabled:opacity-50"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={handleSubmitBooking}
+                                        disabled={submittingBooking}
+                                        className="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-emerald-500/20"
+                                    >
+                                        {submittingBooking ? (
+                                            <><Loader2 size={18} className="animate-spin" /> Booking...</>
+                                        ) : (
+                                            <>Confirm Booking</>
+                                        )}
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        )}
                     </AnimatePresence>
                 </div>
 
                 {/* Footer */}
                 <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
-                    {step > 1 ? (
+                    {step > 1 && step < 4 ? (
                         <button
                             onClick={() => {
                                 if (step === 3) { setStep(2); setSelectedFloor(null); }

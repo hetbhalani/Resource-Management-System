@@ -11,7 +11,7 @@ export const GET = async () => {
     await prisma.maintenance.updateMany({
         where: {
             status: { in: ["scheduled", "in_progress"] },
-            end_datetime: { lt: now },
+            scheduled_date: { lt: now },
         },
         data: { status: "completed" },
     });
@@ -23,8 +23,7 @@ export const GET = async () => {
                     resource_types: true,
                     buildings: true,
                 }
-            },
-            users: true,
+            }
         },
         orderBy: { scheduled_date: "desc" }
     });
@@ -69,17 +68,13 @@ export const POST = async (request: NextRequest) => {
         const newMaintenance = await prisma.maintenance.create({
             data: {
                 resource_id: body.resource_id,
-                reported_by: Number(jwtUser.userId),
                 maintenance_type: body.maintenance_type || "other",
                 scheduled_date: scheduledDate,
-                start_datetime: body.start_datetime ? new Date(body.start_datetime) : null,
-                end_datetime: body.end_datetime ? new Date(body.end_datetime) : null,
                 status: body.status || "reported",
                 notes: body.notes || null
             },
             include: {
-                resources: true,
-                users: true,
+                resources: true
             }
         });
 

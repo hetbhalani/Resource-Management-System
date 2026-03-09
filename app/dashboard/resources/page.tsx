@@ -9,14 +9,14 @@ import { toast } from "sonner";
 import { useUser } from "@/components/UserProvider";
 
 interface ResourceType {
-    type_id: number;
+    resource_type_id: number;
     type_name: string;
 }
 
 interface Resource {
     resource_id: number;
     resource_name: string;
-    type_id: number;
+    resource_type_id: number;
     building_id: number;
     floor_number: number | null;
     description: string | null;
@@ -50,7 +50,7 @@ export default function ResourcesPage() {
     const [showForm, setShowForm] = useState(false);
     const [editResource, setEditResource] = useState<Resource | null>(null);
     const [formData, setFormData] = useState({
-        resource_name: "", type_id: "", building_id: "", floor_number: "", description: ""
+        resource_name: "", resource_type_id: "", building_id: "", floor_number: "", description: ""
     });
     const [submitting, setSubmitting] = useState(false);
     const { isAdmin } = useUser();
@@ -74,14 +74,14 @@ export default function ResourcesPage() {
             setEditResource(resource);
             setFormData({
                 resource_name: resource.resource_name,
-                type_id: resource.type_id.toString(),
+                resource_type_id: resource.resource_type_id.toString(),
                 building_id: resource.building_id.toString(),
                 floor_number: resource.floor_number?.toString() || "",
                 description: resource.description || "",
             });
         } else {
             setEditResource(null);
-            setFormData({ resource_name: "", type_id: "", building_id: "", floor_number: "", description: "" });
+            setFormData({ resource_name: "", resource_type_id: "", building_id: "", floor_number: "", description: "" });
         }
         setShowForm(true);
     };
@@ -97,7 +97,7 @@ export default function ResourcesPage() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     resource_name: formData.resource_name,
-                    type_id: parseInt(formData.type_id),
+                    resource_type_id: parseInt(formData.resource_type_id),
                     building_id: parseInt(formData.building_id),
                     floor_number: formData.floor_number ? parseInt(formData.floor_number) : null,
                     description: formData.description || null,
@@ -126,7 +126,7 @@ export default function ResourcesPage() {
     const filtered = resources.filter(r => {
         const matchSearch = r.resource_name.toLowerCase().includes(search.toLowerCase()) ||
             r.buildings.building_name.toLowerCase().includes(search.toLowerCase());
-        const matchType = !filterType || r.type_id.toString() === filterType;
+        const matchType = !filterType || r.resource_type_id.toString() === filterType;
         return matchSearch && matchType;
     });
 
@@ -169,7 +169,7 @@ export default function ResourcesPage() {
                     <select value={filterType} onChange={(e) => setFilterType(e.target.value)}
                         className="pl-9 pr-8 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all appearance-none">
                         <option value="">All Types</option>
-                        {types.map(t => <option key={t.type_id} value={t.type_id}>{t.type_name}</option>)}
+                        {types.map(t => <option key={t.resource_type_id} value={t.resource_type_id}>{t.type_name}</option>)}
                     </select>
                 </div>
             </div>
@@ -285,10 +285,10 @@ export default function ResourcesPage() {
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Type *</label>
-                                        <select value={formData.type_id} onChange={(e) => setFormData({ ...formData, type_id: e.target.value })} required
+                                        <select value={formData.resource_type_id} onChange={(e) => setFormData({ ...formData, resource_type_id: e.target.value })} required
                                             className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all">
                                             <option value="">Select type</option>
-                                            {types.map(t => <option key={t.type_id} value={t.type_id}>{t.type_name}</option>)}
+                                            {types.map(t => <option key={t.resource_type_id} value={t.resource_type_id}>{t.type_name}</option>)}
                                         </select>
                                     </div>
                                     <div>
