@@ -3,6 +3,14 @@ import jwt from 'jsonwebtoken';
 import { compare } from 'bcryptjs';
 import { prisma } from "@/lib/prisma";
 
+const DEFAULT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
+
+function getCookieMaxAge() {
+    const raw = process.env.JWT_EXPIRES_IN;
+    const parsed = raw ? Number(raw) : NaN;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_COOKIE_MAX_AGE;
+}
+
 export async function POST(request: Request) {
     const { email, password, role } = await request.json();
 
@@ -39,7 +47,7 @@ export async function POST(request: Request) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: Number(process.env.JWT_EXPIRES_IN)
+        maxAge: getCookieMaxAge()
     })
 
     return res;

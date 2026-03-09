@@ -4,7 +4,6 @@ import { verifyToken } from "@/lib/jwt";
 export async function GET(req: NextRequest) {
   try {
     const token = req.cookies.get("authToken")?.value;
-    console.log(token)
     if (!token) {
       return NextResponse.json(
         { message: "Unauthorized" },

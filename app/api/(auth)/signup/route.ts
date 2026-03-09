@@ -3,6 +3,14 @@ import jwt from 'jsonwebtoken';
 import { hash } from 'bcryptjs';
 import { prisma } from "@/lib/prisma";
 
+const DEFAULT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days in seconds
+
+function getCookieMaxAge() {
+    const raw = process.env.JWT_EXPIRES_IN;
+    const parsed = raw ? Number(raw) : NaN;
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_COOKIE_MAX_AGE;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
@@ -28,18 +36,23 @@ export async function POST(request: NextRequest) {
         // Hash the password before storing
         const hashedPassword = await hash(body.password, 10);
 
+        const requestedRole = body.role;
+        const normalizedRole = requestedRole === "student" || requestedRole === "faculty" || requestedRole === "maintainer"
+            ? requestedRole
+            : "faculty";
+
         const newUser = await prisma.users.create({
             data: {
                 name: body.name,
                 email: body.email,
-                role: body.role || 'user',
+                role: normalizedRole,
                 password: hashedPassword,
             }
         })
 
         const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
         const token = jwt.sign(
-            { userId: newUser.user_id, email: newUser.email },
+            { userId: newUser.user_id, email: newUser.email, name: newUser.name, role: newUser.role },
             process.env.JWT_SECRET!,
             { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] }
         );
@@ -53,7 +66,7 @@ export async function POST(request: NextRequest) {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
-            maxAge: Number(process.env.JWT_EXPIRES_IN)
+            maxAge: getCookieMaxAge()
         });
 
         return res;
