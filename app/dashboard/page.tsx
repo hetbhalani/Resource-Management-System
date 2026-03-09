@@ -133,7 +133,7 @@ export default function DashboardPage() {
     if (user) fetchStats();
   }, [user, isAdmin]);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -141,7 +141,7 @@ export default function DashboardPage() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 12, opacity: 0 },
     visible: {
       y: 0,

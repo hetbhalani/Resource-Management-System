@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Tags, Plus, Pencil, Trash2, X, Loader2, Box } from "lucide-react";
 import { toast } from "sonner";
 import { useUser } from "@/components/UserProvider";
@@ -80,12 +80,12 @@ export default function ResourceTypesPage() {
         } catch { toast.error("Delete failed"); }
     };
 
-    const containerVariants = {
+    const containerVariants: Variants = {
         hidden: { opacity: 0 },
         visible: { opacity: 1, transition: { staggerChildren: 0.06 } }
     };
 
-    const cardVariants = {
+    const cardVariants: Variants = {
         hidden: { opacity: 0, y: 15, scale: 0.97 },
         visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 200, damping: 20 } }
     };
