@@ -173,7 +173,3 @@ Set these environment variables in Vercel:
 - `JWT_EXPIRES_IN`
 
 Then deploy normally.
-
-## License
-
-Choose and add a license if this project is open-source.
